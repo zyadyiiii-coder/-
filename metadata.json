@@ -1,0 +1,7 @@
+{
+  "name": "Copy of YIDAOJIAHUA Portfolio",
+  "description": "Mobile-first portfolio for YIDAOJIAHUA Culture Development Co., featuring branding, video, music, and event services.",
+  "requestFramePermissions": [
+    "microphone"
+  ]
+}
