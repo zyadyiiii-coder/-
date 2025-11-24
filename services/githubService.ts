@@ -22,7 +22,6 @@ export const updateGitHubFile = async (config: GitHubConfig, content: string): P
         if (!getResponse.ok) {
             if (getResponse.status === 404) {
                  // File might not exist, but let's assume update flow first.
-                 // If creating new file, sha is not needed. But we are updating content.ts usually.
                  return { success: false, message: '无法找到 GitHub 上的文件，请检查路径。' };
             }
             return { success: false, message: `GitHub API Error: ${getResponse.statusText}` };
@@ -31,10 +30,14 @@ export const updateGitHubFile = async (config: GitHubConfig, content: string): P
         const fileData = await getResponse.json();
         const sha = fileData.sha;
 
-        // 2. Encode content to Base64 (handling UTF-8 strings)
-        // Standard btoa fails on unicode, so we use this trick
+        // 2. Encode content to Base64 (handling UTF-8 strings for Chinese)
         const utf8Bytes = new TextEncoder().encode(content);
-        const base64Content = btoa(String.fromCharCode(...utf8Bytes));
+        // Browser compatible way to convert Uint8Array to binary string
+        let binaryString = "";
+        for (let i = 0; i < utf8Bytes.length; i++) {
+            binaryString += String.fromCharCode(utf8Bytes[i]);
+        }
+        const base64Content = btoa(binaryString);
 
         // 3. Put new content
         const putResponse = await fetch(apiUrl, {

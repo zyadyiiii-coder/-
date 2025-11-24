@@ -4,8 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <title>译道佳华 - YIDAOJIAHUA</title>
-    <!-- We keep Tailwind CDN for simplicity to avoid complex PostCSS setup in this specific demo context, 
-         but for a full production app, installing tailwindcss via npm is recommended. -->
+    <!-- Keep Tailwind CDN for styling simplicity -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
       tailwind.config = {
@@ -64,7 +63,7 @@
 </head>
   <body class="bg-gray-50 text-brand-dark">
     <div id="root"></div>
-    <!-- Crucial: Point to the TypeScript entry file for Vite to bundle -->
+    <!-- Vite Entry Point -->
     <script type="module" src="/index.tsx"></script>
   </body>
 </html>

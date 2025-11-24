@@ -17,7 +17,7 @@ export const GitHubSyncModal: React.FC<GitHubSyncModalProps> = ({ isOpen, onClos
     const [token, setToken] = useState('');
     const [owner, setOwner] = useState('');
     const [repo, setRepo] = useState('');
-    const [path, setPath] = useState('src/content.ts'); // Default based on project structure
+    const [path, setPath] = useState('src/content.ts'); 
 
     // Load saved config on open
     useEffect(() => {
@@ -25,7 +25,7 @@ export const GitHubSyncModal: React.FC<GitHubSyncModalProps> = ({ isOpen, onClos
             setToken(localStorage.getItem('gh_token') || '');
             setOwner(localStorage.getItem('gh_owner') || '');
             setRepo(localStorage.getItem('gh_repo') || '');
-            setPath(localStorage.getItem('gh_path') || 'content.ts');
+            setPath(localStorage.getItem('gh_path') || 'src/content.ts');
         }
     }, [isOpen]);
 
@@ -114,7 +114,7 @@ export const GitHubSyncModal: React.FC<GitHubSyncModalProps> = ({ isOpen, onClos
                             type="text" 
                             value={path}
                             onChange={e => setPath(e.target.value)}
-                            placeholder="content.ts"
+                            placeholder="src/content.ts"
                             className="w-full border rounded p-2 text-sm"
                         />
                     </div>

@@ -35,9 +35,6 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, i
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        // Warning: This creates a Base64 string. 
-        // For production, you'd upload to a server and get a URL.
-        // For this static demo, Base64 works but increases file size.
         handleChange(key, reader.result);
       };
       reader.readAsDataURL(file);
@@ -123,7 +120,6 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, i
                         <img 
                             src={formData[field.key]} 
                             alt="Preview" 
-                            // Use contain for logos so they don't get cropped, cover for backgrounds
                             className={`w-full h-full ${field.key === 'logoUrl' ? 'object-contain p-2' : 'object-cover'}`} 
                         />
                      ) : (
@@ -141,8 +137,8 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, i
                   </div>
                   <input
                     type="text"
-                    placeholder="或输入图片 URL (Or image URL)"
-                    value={formData[field.key]?.startsWith('data:') ? '(已选择本地图片 Local Image Selected)' : formData[field.key]}
+                    placeholder="或输入图片 URL"
+                    value={formData[field.key]?.startsWith('data:') ? '(已选择本地图片)' : formData[field.key]}
                     onChange={(e) => handleChange(field.key, e.target.value)}
                     className="w-full border border-gray-300 rounded-lg p-2 text-xs text-gray-500"
                     disabled={formData[field.key]?.startsWith('data:')}
@@ -151,14 +147,15 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, i
               )}
 
               {field.type === 'gallery' && (
-                  <div className="space-y-3">
+                  <div className="space-y-3 bg-gray-50 p-3 rounded-lg border">
+                      <div className="text-xs text-gray-500 mb-2">图片顺序对应轮播顺序</div>
                       {(formData[field.key] || []).map((imgUrl: string, index: number) => (
-                          <div key={index} className="flex gap-2 items-start">
-                              <div className="relative h-20 w-20 flex-none bg-gray-100 rounded border overflow-hidden group">
+                          <div key={index} className="flex gap-2 items-start bg-white p-2 rounded border">
+                              <div className="relative h-16 w-16 flex-none bg-gray-200 rounded overflow-hidden group">
                                   {imgUrl ? (
                                       <img src={imgUrl} className="w-full h-full object-cover" />
                                   ) : (
-                                      <div className="flex items-center justify-center h-full text-xs text-gray-400">Empty</div>
+                                      <div className="flex items-center justify-center h-full text-xs text-gray-400">空</div>
                                   )}
                                   <input 
                                     type="file" 
@@ -170,16 +167,18 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, i
                               <div className="flex-1 space-y-1">
                                 <input 
                                     type="text"
-                                    placeholder="Image URL"
-                                    value={imgUrl?.startsWith('data:') ? '(Local Image)' : imgUrl}
+                                    placeholder="输入图片地址或点击左侧上传"
+                                    value={imgUrl?.startsWith('data:') ? '(已选择本地图片)' : imgUrl}
                                     onChange={(e) => updateGalleryImage(field.key, index, e.target.value)}
-                                    className="w-full border p-1 text-sm rounded"
+                                    className="w-full border p-1 text-xs rounded"
                                     disabled={imgUrl?.startsWith('data:')}
                                 />
+                                <div className="text-[10px] text-gray-400">图 {index + 1}</div>
                               </div>
                               <button 
                                 onClick={() => removeGalleryImage(field.key, index)}
                                 className="text-red-500 p-2 hover:bg-red-50 rounded"
+                                title="移除这张图片"
                               >
                                   <Trash2 size={16} />
                               </button>
@@ -187,9 +186,9 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, i
                       ))}
                       <button 
                         onClick={() => addGalleryImage(field.key)}
-                        className="w-full py-2 border-2 border-dashed border-gray-300 rounded text-gray-500 hover:border-brand-red hover:text-brand-red flex items-center justify-center gap-2"
+                        className="w-full py-2 border-2 border-dashed border-gray-300 rounded text-gray-500 hover:border-brand-red hover:text-brand-red flex items-center justify-center gap-2 text-sm"
                       >
-                          <Plus size={16} /> 添加更多图片 (Add Image)
+                          <Plus size={16} /> 添加图片
                       </button>
                   </div>
               )}
@@ -212,7 +211,7 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, i
             onClick={() => { onSave(formData); onClose(); }}
             className="px-6 py-2 bg-brand-red text-white font-bold rounded-lg hover:bg-red-700 flex items-center gap-2"
           >
-            <Save size={18} /> 保存修改
+            <Save size={18} /> 保存
           </button>
         </div>
       </div>
