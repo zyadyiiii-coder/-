@@ -12,6 +12,7 @@ export interface PortfolioItem {
   description: string;
   imageUrl: string;
   videoUrl?: string; // Optional link to video
+  gallery?: string[]; // Optional array of additional images
   tags: string[];
 }
 

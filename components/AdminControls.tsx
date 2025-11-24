@@ -1,17 +1,24 @@
 import React, { useState } from 'react';
-import { Settings, Download, RotateCcw, X, Copy, Check } from 'lucide-react';
+import { Settings, Download, RotateCcw, X, Copy, Check, Github } from 'lucide-react';
 import { useContent } from '../contexts/ContentContext';
+import { GitHubSyncModal } from './GitHubSyncModal';
 
 export const AdminControls: React.FC = () => {
   const { isAdmin, toggleAdmin, generateConfigFile, resetToDefault } = useContent();
   const [isOpen, setIsOpen] = useState(false);
   const [showExport, setShowExport] = useState(false);
+  const [showGitHubSync, setShowGitHubSync] = useState(false);
   const [copied, setCopied] = useState(false);
 
   const handleExport = () => {
     setShowExport(true);
     setIsOpen(false);
   };
+
+  const handleGitHubSync = () => {
+      setShowGitHubSync(true);
+      setIsOpen(false);
+  }
 
   const handleCopy = () => {
     navigator.clipboard.writeText(generateConfigFile());
@@ -31,6 +38,13 @@ export const AdminControls: React.FC = () => {
                     title="重置"
                 >
                     <RotateCcw size={18} />
+                </button>
+                <button 
+                    onClick={handleGitHubSync}
+                    className="bg-gray-900 text-white p-3 rounded-full shadow-lg flex items-center gap-2 text-sm font-bold hover:bg-black"
+                    title="同步到 GitHub"
+                >
+                    <Github size={18} />
                 </button>
                 <button 
                     onClick={handleExport}
@@ -55,6 +69,9 @@ export const AdminControls: React.FC = () => {
              {isOpen ? <X size={24} /> : <Settings size={24} />}
         </button>
       </div>
+
+      {/* GitHub Sync Modal */}
+      <GitHubSyncModal isOpen={showGitHubSync} onClose={() => setShowGitHubSync(false)} />
 
       {/* Export Modal */}
       {showExport && (

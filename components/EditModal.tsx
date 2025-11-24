@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { X, Upload, Save } from 'lucide-react';
+import { X, Upload, Save, Plus, Trash2 } from 'lucide-react';
 
 interface FieldConfig {
   key: string;
   label: string;
-  type: 'text' | 'textarea' | 'image' | 'tags';
+  type: 'text' | 'textarea' | 'image' | 'tags' | 'gallery';
   description?: string;
 }
 
@@ -43,6 +43,35 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, i
       reader.readAsDataURL(file);
     }
   };
+
+  // Gallery Helpers
+  const addGalleryImage = (key: string) => {
+      const currentGallery = formData[key] || [];
+      handleChange(key, [...currentGallery, '']);
+  }
+
+  const updateGalleryImage = (key: string, index: number, value: string) => {
+      const currentGallery = [...(formData[key] || [])];
+      currentGallery[index] = value;
+      handleChange(key, currentGallery);
+  }
+
+  const uploadGalleryImage = (key: string, index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          updateGalleryImage(key, index, reader.result as string);
+        };
+        reader.readAsDataURL(file);
+      }
+  }
+
+  const removeGalleryImage = (key: string, index: number) => {
+      const currentGallery = [...(formData[key] || [])];
+      currentGallery.splice(index, 1);
+      handleChange(key, currentGallery);
+  }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 animate-fade-in">
@@ -119,6 +148,50 @@ export const EditModal: React.FC<EditModalProps> = ({ isOpen, onClose, onSave, i
                     disabled={formData[field.key]?.startsWith('data:')}
                   />
                 </div>
+              )}
+
+              {field.type === 'gallery' && (
+                  <div className="space-y-3">
+                      {(formData[field.key] || []).map((imgUrl: string, index: number) => (
+                          <div key={index} className="flex gap-2 items-start">
+                              <div className="relative h-20 w-20 flex-none bg-gray-100 rounded border overflow-hidden group">
+                                  {imgUrl ? (
+                                      <img src={imgUrl} className="w-full h-full object-cover" />
+                                  ) : (
+                                      <div className="flex items-center justify-center h-full text-xs text-gray-400">Empty</div>
+                                  )}
+                                  <input 
+                                    type="file" 
+                                    accept="image/*"
+                                    onChange={(e) => uploadGalleryImage(field.key, index, e)}
+                                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                                  />
+                              </div>
+                              <div className="flex-1 space-y-1">
+                                <input 
+                                    type="text"
+                                    placeholder="Image URL"
+                                    value={imgUrl?.startsWith('data:') ? '(Local Image)' : imgUrl}
+                                    onChange={(e) => updateGalleryImage(field.key, index, e.target.value)}
+                                    className="w-full border p-1 text-sm rounded"
+                                    disabled={imgUrl?.startsWith('data:')}
+                                />
+                              </div>
+                              <button 
+                                onClick={() => removeGalleryImage(field.key, index)}
+                                className="text-red-500 p-2 hover:bg-red-50 rounded"
+                              >
+                                  <Trash2 size={16} />
+                              </button>
+                          </div>
+                      ))}
+                      <button 
+                        onClick={() => addGalleryImage(field.key)}
+                        className="w-full py-2 border-2 border-dashed border-gray-300 rounded text-gray-500 hover:border-brand-red hover:text-brand-red flex items-center justify-center gap-2"
+                      >
+                          <Plus size={16} /> 添加更多图片 (Add Image)
+                      </button>
+                  </div>
               )}
               
               {field.description && (

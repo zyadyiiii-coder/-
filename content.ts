@@ -76,6 +76,11 @@ export const PORTFOLIO_DATA: ServiceCategory[] = [
         title: "未来方舟-甜蜜小镇",
         description: "小区对外形象VI设计及施工图展示",
         imageUrl: "https://picsum.photos/800/600?random=1",
+        gallery: [
+            "https://picsum.photos/800/600?random=20",
+            "https://picsum.photos/800/600?random=21",
+            "https://picsum.photos/800/600?random=22"
+        ],
         tags: ["VI设计", "导视系统"]
       },
       {
@@ -154,6 +159,10 @@ export const PORTFOLIO_DATA: ServiceCategory[] = [
         title: "贵州茶叶营销发展论坛",
         description: "大型舞台搭建与灯光音响执行。",
         imageUrl: "https://picsum.photos/800/600?random=9",
+        gallery: [
+            "https://picsum.photos/800/600?random=30",
+            "https://picsum.photos/800/600?random=31"
+        ],
         tags: ["舞台搭建", "会议"]
       },
       {
@@ -175,6 +184,11 @@ export const PORTFOLIO_DATA: ServiceCategory[] = [
         title: "自有印刷厂房",
         description: "UV打印，喷绘，写真，各类广告物料制作。",
         imageUrl: "https://picsum.photos/800/600?random=11",
+        gallery: [
+            "https://picsum.photos/800/600?random=40",
+            "https://picsum.photos/800/600?random=41",
+            "https://picsum.photos/800/600?random=42"
+        ],
         tags: ["工厂实景", "物料"]
       },
       {

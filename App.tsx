@@ -171,7 +171,8 @@ function MainContent() {
             fields={[
                 { key: 'title', label: '标题 (Title)', type: 'text' },
                 { key: 'description', label: '描述 (Description)', type: 'textarea' },
-                { key: 'imageUrl', label: '封面图片 (Image)', type: 'image' },
+                { key: 'imageUrl', label: '封面图片 (Cover Image)', type: 'image' },
+                { key: 'gallery', label: '更多图片 (Gallery)', type: 'gallery', description: '添加多张图片以开启轮播展示' },
                 { key: 'videoUrl', label: '视频链接 (Video URL)', type: 'text', description: '选填 (Optional)' },
                 { key: 'tags', label: '标签 (Tags)', type: 'tags' },
             ]}
