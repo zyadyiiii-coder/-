@@ -2,14 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { ChevronDown, Edit2 } from 'lucide-react';
 import { useContent } from '../contexts/ContentContext';
 import { EditModal } from './EditModal';
+import { motion } from 'framer-motion';
 
 export const Hero: React.FC = () => {
   const { companyInfo, isAdmin, updateCompanyInfo } = useContent();
-  const [loaded, setLoaded] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
-  // Cinematic Particle System (Embers)
+  // Cinematic Gold Embers Particle System
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -22,7 +22,7 @@ export const Hero: React.FC = () => {
     canvas.height = height;
 
     const particles: Particle[] = [];
-    const particleCount = 60; // Adjust for density
+    const particleCount = 80;
 
     class Particle {
       x: number;
@@ -30,50 +30,48 @@ export const Hero: React.FC = () => {
       size: number;
       speedY: number;
       opacity: number;
-      fadeSpeed: number;
       color: string;
 
       constructor() {
         this.x = Math.random() * width;
-        this.y = Math.random() * height + height; // Start below or scattered
-        this.size = Math.random() * 2 + 0.5;
-        this.speedY = Math.random() * 0.5 + 0.2;
-        this.opacity = Math.random() * 0.5 + 0.2;
-        this.fadeSpeed = Math.random() * 0.005 + 0.002;
-        // Cinematic Gold/Red ember colors
-        const colors = ['255, 215, 0', '255, 69, 0', '218, 165, 32']; 
+        this.y = Math.random() * height + height;
+        this.size = Math.random() * 2;
+        this.speedY = Math.random() * 0.5 + 0.1;
+        this.opacity = Math.random() * 0.5;
+        // Cinematic Gold Palette
+        const colors = ['#D4AF37', '#FFD700', '#DAA520', '#CD853F'];
         this.color = colors[Math.floor(Math.random() * colors.length)];
       }
 
       update() {
         this.y -= this.speedY;
-        // Slight horizontal drift
-        this.x += Math.sin(this.y * 0.005) * 0.3;
+        this.x += Math.sin(this.y * 0.003) * 0.2; // Gentle sway
 
-        // Reset if off screen or fully transparent
-        if (this.y < -50 || this.opacity <= 0) {
+        if (this.y < -50) {
           this.y = height + Math.random() * 50;
           this.x = Math.random() * width;
-          this.opacity = Math.random() * 0.5 + 0.2;
         }
 
-        // Flicker effect
-        this.opacity -= Math.random() > 0.9 ? this.fadeSpeed * 5 : 0;
-        if(Math.random() > 0.98) this.opacity = Math.min(1, this.opacity + 0.2);
+        // Twinkle
+        if (Math.random() > 0.95) {
+            this.opacity = Math.random() * 0.8;
+        }
       }
 
       draw() {
         if (!ctx) return;
+        ctx.save();
+        ctx.globalAlpha = this.opacity;
+        ctx.fillStyle = this.color;
+        ctx.shadowBlur = 10;
+        ctx.shadowColor = this.color;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = `rgba(${this.color}, 0.5)`;
         ctx.fill();
+        ctx.restore();
       }
     }
 
-    // Init
     for (let i = 0; i < particleCount; i++) {
       particles.push(new Particle());
     }
@@ -100,117 +98,125 @@ export const Hero: React.FC = () => {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  useEffect(() => {
-    setLoaded(true);
-  }, []);
-
   const scrollToContent = () => {
-    const element = document.getElementById('portfolio-content');
+    const element = document.getElementById('main-content');
     element?.scrollIntoView({ behavior: 'smooth' });
   };
 
   return (
-    <>
-        <div className="relative h-screen w-full bg-black overflow-hidden flex flex-col items-center justify-center text-white">
+    <div className="relative h-screen w-full overflow-hidden flex flex-col items-center justify-center text-white bg-black">
         
-        {/* 1. Dynamic Background Layer */}
+        {/* Background Image Layer */}
         {companyInfo.heroBackgroundImage ? (
-             <div 
-             className="absolute inset-0 z-0 bg-cover bg-center transition-transform duration-[20s] ease-linear transform scale-100 hover:scale-110"
+             <motion.div 
+             initial={{ scale: 1.1 }}
+             animate={{ scale: 1 }}
+             transition={{ duration: 10, ease: "easeOut" }}
+             className="absolute inset-0 z-0 bg-cover bg-center opacity-40"
              style={{ backgroundImage: `url(${companyInfo.heroBackgroundImage})` }}
            />
         ) : (
-            // Default Fallback Gradient if no image
-            <div className="absolute inset-0 z-0 bg-gradient-to-br from-[#2b0505] via-black to-[#1a0b0b]" />
+            <div className="absolute inset-0 z-0 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-brand-red/20 via-black to-black" />
         )}
 
-        {/* 2. Cinematic Vignette & Overlay */}
-        <div className="absolute inset-0 z-0 bg-black/60 bg-[radial-gradient(circle_at_center,transparent_0%,rgba(0,0,0,0.8)_100%)]"></div>
+        {/* Cinematic Vignette Overlay */}
+        <div className="absolute inset-0 z-0 bg-gradient-to-t from-black via-transparent to-black/80" />
+        <div className="absolute inset-0 z-0 bg-gradient-to-r from-black/50 via-transparent to-black/50" />
 
-        {/* 3. Particle Canvas */}
+        {/* Particle Canvas */}
         <canvas ref={canvasRef} className="absolute inset-0 z-10 pointer-events-none" />
 
         {/* Admin Edit Button */}
         {isAdmin && (
             <button 
                 onClick={() => setIsEditing(true)}
-                className="absolute top-20 right-6 bg-brand-red/80 text-white p-2 rounded-full shadow-lg z-50 hover:bg-red-600 transition-transform backdrop-blur-sm"
+                className="absolute top-24 right-6 bg-brand-gold text-black p-3 rounded-full shadow-[0_0_20px_rgba(212,175,55,0.5)] z-50 hover:bg-white transition-all"
             >
                 <Edit2 size={20} />
             </button>
         )}
 
-        {/* 4. Content Content */}
-        <div className={`z-20 text-center px-6 transition-all duration-1000 transform ${loaded ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0'}`}>
+        {/* Main Content */}
+        <div className="z-20 text-center px-4 relative max-w-4xl mx-auto">
             
             {/* Logo Section */}
             {companyInfo.logoUrl && (
-                <div className="mb-8 relative inline-block animate-float">
+                <motion.div 
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 1 }}
+                    className="mb-8 flex justify-center"
+                >
                     <img 
                         src={companyInfo.logoUrl} 
                         alt="Company Logo" 
-                        className="h-20 md:h-24 w-auto object-contain drop-shadow-[0_0_15px_rgba(255,215,0,0.3)]"
+                        className="h-24 md:h-32 w-auto object-contain drop-shadow-[0_0_25px_rgba(212,175,55,0.4)]"
                     />
-                </div>
+                </motion.div>
             )}
 
-            {/* Cinematic English Name */}
-            <h1 className="text-6xl md:text-8xl font-bold mb-2 tracking-tighter" 
-                style={{ 
-                    fontFamily: '"Times New Roman", serif',
-                    background: 'linear-gradient(to bottom, #cfc7f8 0%, #ffffff 50%, #6c6c6c 100%)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.5))'
-                }}>
-                YiDao
-            </h1>
-
-            {/* Cinematic Chinese Name with Gold Effect */}
-            <h2 className="text-4xl md:text-5xl font-bold mb-10 tracking-[0.2em] relative inline-block">
-                <span className="relative z-10 bg-clip-text text-transparent bg-gradient-to-r from-[#BF953F] via-[#FCF6BA] to-[#B38728] drop-shadow-md">
+            {/* Cinematic Name */}
+            <motion.h1 
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ duration: 1.2, delay: 0.2 }}
+                className="text-5xl md:text-8xl font-bold mb-4 tracking-tighter font-serif"
+            >
+                <span className="text-gold-gradient drop-shadow-2xl">
                     {companyInfo.name}
                 </span>
-                {/* Subtle glow behind text */}
-                <div className="absolute inset-0 bg-brand-red/20 blur-xl -z-10 rounded-full"></div>
-            </h2>
-            
-            <div className="w-24 h-[2px] bg-gradient-to-r from-transparent via-[#BF953F] to-transparent mx-auto mb-10"></div>
+            </motion.h1>
 
-            <div className="space-y-2">
-                <p className="text-lg md:text-2xl font-light tracking-widest uppercase text-gray-300">
+            <motion.div 
+                initial={{ width: 0 }}
+                animate={{ width: "100px" }}
+                transition={{ duration: 1, delay: 1 }}
+                className="h-[2px] bg-brand-gold mx-auto mb-8 shadow-[0_0_10px_#D4AF37]"
+            />
+
+            <motion.div 
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 1, delay: 0.5 }}
+                className="space-y-4"
+            >
+                <p className="text-xl md:text-3xl font-light tracking-[0.3em] uppercase text-gray-300 font-cinzel">
                     {companyInfo.slogan.split('，')[0]}
                 </p>
-                <p className="text-xl md:text-3xl font-bold tracking-widest text-white drop-shadow-lg">
+                <p className="text-lg md:text-2xl font-light tracking-[0.2em] text-brand-goldLight">
                     {companyInfo.slogan.split('，')[1] || ''}
                 </p>
-            </div>
+            </motion.div>
         </div>
 
         {/* Scroll Indicator */}
-        <button 
+        <motion.button 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1, y: [0, 10, 0] }}
+            transition={{ duration: 2, repeat: Infinity, delay: 2 }}
             onClick={scrollToContent}
-            className="absolute bottom-12 animate-bounce p-2 z-20 opacity-70 hover:opacity-100 transition-opacity"
-            aria-label="Scroll down"
+            className="absolute bottom-12 z-20 text-brand-gold/70 hover:text-brand-gold transition-colors"
         >
-            <ChevronDown size={32} className="text-[#BF953F]" />
-        </button>
-        </div>
+            <div className="flex flex-col items-center gap-2">
+                <span className="text-[10px] tracking-widest uppercase font-cinzel">Scroll</span>
+                <ChevronDown size={32} />
+            </div>
+        </motion.button>
 
         <EditModal 
             isOpen={isEditing}
             onClose={() => setIsEditing(false)}
             onSave={updateCompanyInfo}
             initialData={companyInfo}
-            title="编辑首页信息 (Edit Hero Section)"
+            title="编辑首页信息 (Edit Hero)"
             fields={[
-                { key: 'name', label: '公司名称 (Company Name)', type: 'text' },
-                { key: 'slogan', label: '口号 (Slogan)', type: 'text', description: '建议使用逗号分隔两段文字' },
-                { key: 'description', label: '公司简介 (Description)', type: 'textarea' },
-                { key: 'logoUrl', label: '公司 Logo (Logo)', type: 'image', description: '建议使用透明背景 PNG (Transparent PNG recommended)' },
-                { key: 'heroBackgroundImage', label: '背景图片 (Background Image)', type: 'image', description: '建议使用暗色调的高清图片 (Dark HD image recommended)' },
+                { key: 'name', label: '公司名称', type: 'text' },
+                { key: 'slogan', label: '口号 (为热爱而生,为您而来)', type: 'text' },
+                { key: 'description', label: '公司简介', type: 'textarea' },
+                { key: 'logoUrl', label: '公司 Logo (PNG)', type: 'image' },
+                { key: 'heroBackgroundImage', label: '背景大图', type: 'image' },
             ]}
         />
-    </>
+    </div>
   );
 };
